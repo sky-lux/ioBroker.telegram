@@ -290,40 +290,42 @@ function startAdapter(options) {
     // is called if a subscribed state changes
     adapter.on('stateChange', (id, state) => {
         if (state) {
-            if (!state.ack) {
-                if (id.endsWith('communicate.response')) {
-                    // Send to someone this message
-                    sendMessage(state.val)
-                        .then(data => adapter.setState('communicate.response', state.val, true));
-                } else
-                if (id.endsWith('communicate.responseSilent')) {
-                    // Send to someone this message
-                    sendMessage(state.val, null, null, {disable_notification: true})
-                        .then(data => adapter.setState('communicate.responseSilent', state.val, true));
-                } else
-                if (id.endsWith('communicate.responseJson')) {
-                    try {
-                        const val = JSON.parse(state.val);
+            if (state.ts == state.lc) {
+                if (!state.ack) {
+                    if (id.endsWith('communicate.response')) {
                         // Send to someone this message
-                        sendMessage(val)
-                            .then(data => adapter.setState('communicate.responseJson', state.val, true));
-                    } catch (err) {
-                        adapter.log.error(`could not parse Json in responseJon state: ${err.message}`);
-                    }
-                } else
-                if (id.endsWith('communicate.responseSilentJson')) {
-                    try {
-                        const val = JSON.parse(state.val);
+                        sendMessage(state.val)
+                            .then(data => adapter.setState('communicate.response', state.val, true));
+                    } else
+                    if (id.endsWith('communicate.responseSilent')) {
                         // Send to someone this message
-                        sendMessage(val, null, null, {disable_notification: true})
+                        sendMessage(state.val, null, null, {disable_notification: true})
                             .then(data => adapter.setState('communicate.responseSilent', state.val, true));
-                    } catch (err) {
-                        adapter.log.error(`could not parse Json in responseSilentJon state: ${err.message}`);
+                    } else
+                    if (id.endsWith('communicate.responseJson')) {
+                        try {
+                            const val = JSON.parse(state.val);
+                            // Send to someone this message
+                            sendMessage(val)
+                                .then(data => adapter.setState('communicate.responseJson', state.val, true));
+                        } catch (err) {
+                            adapter.log.error(`could not parse Json in responseJon state: ${err.message}`);
+                        }
+                    } else
+                    if (id.endsWith('communicate.responseSilentJson')) {
+                        try {
+                            const val = JSON.parse(state.val);
+                            // Send to someone this message
+                            sendMessage(val, null, null, {disable_notification: true})
+                                .then(data => adapter.setState('communicate.responseSilent', state.val, true));
+                        } catch (err) {
+                            adapter.log.error(`could not parse Json in responseSilentJon state: ${err.message}`);
+                        }
                     }
-                }
-            } else {
-                if (commands[id] && commands[id].report) {
-                    sendMessage(getStatus(id, state));
+                } else {
+                    if (commands[id] && commands[id].report) {
+                        sendMessage(getStatus(id, state));
+                    }
                 }
             }
         }
