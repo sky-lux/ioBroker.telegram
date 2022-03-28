@@ -289,6 +289,7 @@ function startAdapter(options) {
 
     // is called if a subscribed state changes
     adapter.on('stateChange', (id, state) => {
+        adapter.log.debug('State Change received: ID ' + id + ' state ' +state );
         if (state) {
             if (state.ts == state.lc) {
                 if (!state.ack) {
